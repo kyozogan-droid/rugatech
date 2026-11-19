@@ -1,0 +1,76 @@
+# Render Blueprint (place at the repo root and set rootDir if backend/ is a subfolder).
+# Secrets marked `sync: false` are asked for once in the Render dashboard — never stored in git.
+databases:
+  - name: rugatech-db
+    plan: free            # Render's free Postgres expires after 30 days — use a paid plan for real use
+    databaseName: rugatech
+    user: rugatech
+
+services:
+  - type: web
+    name: rugatech-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn rugatech.wsgi:application --workers 2 --timeout 60 --bind 0.0.0.0:$PORT
+    healthCheckPath: /api/auth/user/      # answers 401 when the server is healthy
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase: { name: rugatech-db, property: connectionString }
+      - key: ADMIN_EMAILS
+        sync: false                       # e.g. you@rugatech.com — becomes admin when it registers
+      - key: GOOGLE_OAUTH_CLIENT_IDS
+        sync: false                       # comma-separated Android/iOS/Web client IDs
+      - key: EMAIL_HOST
+        sync: false                       # e.g. smtp-relay.brevo.com / smtp.gmail.com
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false                       # e.g. Rugatech Staff <alerts@yourdomain.com>
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CRON_SECRET
+        generateValue: true               # for POST /api/internal/send-reminders/ (free-plan alternative to the cron job)
+      # File storage — pick ONE (Render's disk is ephemeral): S3-compatible bucket…
+      - key: AWS_STORAGE_BUCKET_NAME
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_ENDPOINT_URL
+        sync: false                       # Cloudflare R2 / Backblaze B2 / Supabase Storage endpoint (blank for AWS)
+
+  # Reminders every 10 minutes (24h / 1h / overdue → email + push + in-app).
+  # Render cron jobs are a paid feature: on the free plan delete this block and ping
+  # POST /api/internal/send-reminders/ (header X-Cron-Secret) from cron-job.org instead.
+  - type: cron
+    name: rugatech-reminders
+    runtime: python
+    rootDir: backend
+    schedule: "*/10 * * * *"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py send_reminders
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - fromService: { type: web, name: rugatech-api, envVarKey: DJANGO_SECRET_KEY }
+      - key: DATABASE_URL
+        fromDatabase: { name: rugatech-db, property: connectionString }
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
