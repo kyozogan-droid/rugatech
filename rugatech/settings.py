@@ -153,8 +153,7 @@ REST_FRAMEWORK = {
 }
 
 # ── CORS (mobile apps don't need it; kept for a future admin web app) ─────────
-CORS_ALLOWED_ORIGINS = env_list('CORS_ALLOWED_ORIGINS')
-CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOW_ALL_ORIGINS = 'True'
 CORS_ALLOW_HEADERS = ['accept', 'authorization', 'content-type', 'origin', 'user-agent', 'x-requested-with']
 
 # ── Email (any SMTP provider: Gmail app password, Brevo, Mailgun, SendGrid, Zoho…) ─────
