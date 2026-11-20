@@ -36,7 +36,7 @@ TESTING = 'test' in sys.argv
 SECRET_KEY = 'Kk2WOiF9P7ORCBrSwV2SmsAn83odSyxMdGriMSns3aAXWWBiyTOtq7Bi7Q1_FbFQumGJMSF6FJ89oxSy'
 
 
-ALLOWED_HOSTS = '*'
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
