@@ -30,13 +30,13 @@ def env_list(name, default=''):
 
 # ── Core ──────────────────────────────────────────────────────────────────────
 # Defaults to PRODUCTION-safe. For local development set DJANGO_DEBUG=true.
-DEBUG = 'True'
+DEBUG = True
 TESTING = 'test' in sys.argv
 
 SECRET_KEY = 'Kk2WOiF9P7ORCBrSwV2SmsAn83odSyxMdGriMSns3aAXWWBiyTOtq7Bi7Q1_FbFQumGJMSF6FJ89oxSy'
 
 
-ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', '*' if DEBUG else '.onrender.com,localhost,127.0.0.1,10.0.2.2')
+ALLOWED_HOSTS = '*'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -153,7 +153,7 @@ REST_FRAMEWORK = {
 }
 
 # ── CORS (mobile apps don't need it; kept for a future admin web app) ─────────
-CORS_ALLOW_ALL_ORIGINS = 'True'
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_HEADERS = ['accept', 'authorization', 'content-type', 'origin', 'user-agent', 'x-requested-with']
 
 # ── Email (any SMTP provider: Gmail app password, Brevo, Mailgun, SendGrid, Zoho…) ─────
