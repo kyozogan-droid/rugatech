@@ -157,18 +157,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_HEADERS = ['accept', 'authorization', 'content-type', 'origin', 'user-agent', 'x-requested-with']
 
 # ── Email (any SMTP provider: Gmail app password, Brevo, Mailgun, SendGrid, Zoho…) ─────
-if env('EMAIL_HOST'):
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = env('EMAIL_HOST')
-    EMAIL_PORT = int(env('EMAIL_PORT', '587'))
-    EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-    EMAIL_TIMEOUT = 15
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'   # prints emails in the server log
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'Rugatech Staff <no-reply@rugatech.local>')
-EMAIL_ASYNC = not TESTING   # send in a background thread so API calls never wait on SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'antoniner29@gmail.com'
+EMAIL_HOST_PASSWORD = 'ggrk rlrf llko wuhx'  
+EMAIL_TIMEOUT = 15
+DEFAULT_FROM_EMAIL = 'Rugatech Staff <no-reply@rugatech.local>'  # Note: Gmail may rewrite or restrict the sender address, it's recommended to use your Gmail address for testing
+EMAIL_ASYNC = not TESTING
 
 # ── Rugatech app settings ─────────────────────────────────────────────────────
 APP_NAME = env('APP_NAME', 'Rugatech Staff')
